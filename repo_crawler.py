@@ -20,7 +20,14 @@ def process_config_data(config_data):
     '''
     access_token = config_data['user_credentials']['access_token']
     organization = config_data['organization']['name']
-    return access_token, organization
+
+    # Check for optional filters
+    if config_data['filters']['repo_filter']:
+        repo_filter = config_data['filters']['repo_filter']
+    else:
+        repo_filter = None
+
+    return access_token, organization, repo_filter
 
 def log_into_github(access_token):
     '''
@@ -42,16 +49,22 @@ def get_all_repos(logged_org):
     '''
     return logged_org.get_repos()
 
-def get_open_pull_requests(repo):
+def get_open_pull_requests(repo, repo_filter):
     '''
     Returns a list of links to open pull requests for a given repository
     '''
     list_of_open_pull_requests = []
     open_pulls = repo.get_pulls(state='open', sort='created', base='master')
 
-    for pull in open_pulls:
-        list_of_open_pull_requests.append(pull.html_url)
+    if not repo_filter:
+        for pull in open_pulls:
+            list_of_open_pull_requests.append(pull.html_url)
+    else:
+        for pull in open_pulls:
+            if repo_filter in pull.html_url:
+                list_of_open_pull_requests.append(pull.html_url)
     return list_of_open_pull_requests
+
 
 
 def create_html(list_of_links, filename):
@@ -78,7 +91,7 @@ def main():
     Main execution code
     '''
     configuration_data = read_config_file('config.json')
-    access_token, organization = process_config_data(configuration_data)
+    access_token, organization, repo_filter = process_config_data(configuration_data)
     logged_user = log_into_github(access_token)
     logged_org = log_into_org(logged_user, organization)
     org_repos = get_all_repos(logged_org)
@@ -86,7 +99,7 @@ def main():
     repo_counter = 1
     for repo in org_repos:
         print(f"Working on repository #{repo_counter}")
-        full_list.extend(get_open_pull_requests(repo))
+        full_list.extend(get_open_pull_requests(repo, repo_filter))
         repo_counter += 1
     create_html(full_list, 'pending_review.html')
 
