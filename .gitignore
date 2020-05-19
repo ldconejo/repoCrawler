@@ -1,3 +1,7 @@
 # Config file (including passwords) #
 #####################################
 config.json
+
+# HTML files #
+##############
+*.html
