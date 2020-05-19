@@ -1,0 +1,11 @@
+{
+    "user_credentials": {
+        "access_token": "4j23j423lkj2308023jklj243"
+    },
+    "organization": {
+        "name": "UWPCE-Python-210B-Spring-2020"
+    },
+    "filters": {
+        "repo_filter": "lesson-04"
+    }
+}
