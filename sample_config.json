@@ -3,7 +3,7 @@
         "access_token": "4j23j423lkj2308023jklj243"
     },
     "organization": {
-        "name": "UWPCE-Python-210B-Spring-2020"
+        "name": "your_org_name_here"
     },
     "filters": {
         "repo_filter": "lesson-04"
