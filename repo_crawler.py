@@ -22,7 +22,7 @@ def process_config_data(config_data):
     organization = config_data['organization']['name']
 
     # Check for optional filters
-    if config_data['filters']['repo_filter']:
+    if 'filters'in config_data:
         repo_filter = config_data['filters']['repo_filter']
     else:
         repo_filter = None
