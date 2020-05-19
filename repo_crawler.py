@@ -1,8 +1,10 @@
 '''
 Developed by ldconejo
 '''
-from github import Github
 import json
+import webbrowser
+import os
+from github import Github
 
 def read_config_file(filename):
     '''
@@ -16,7 +18,7 @@ def process_config_data(config_data):
     '''
     Returns username, password and organization
     '''
-    access_token= config_data['user_credentials']['access_token']
+    access_token = config_data['user_credentials']['access_token']
     organization = config_data['organization']['name']
     return access_token, organization
 
@@ -32,7 +34,6 @@ def log_into_org(logged_user, organization):
     Logs into an organization with the existing user
     '''
     logged_org = logged_user.get_organization(organization)
-    logged_org.login
     return logged_org
 
 def get_all_repos(logged_org):
@@ -45,16 +46,32 @@ def get_open_pull_requests(repo):
     '''
     Returns a list of links to open pull requests for a given repository
     '''
+    list_of_open_pull_requests = []
     open_pulls = repo.get_pulls(state='open', sort='created', base='master')
+
     for pull in open_pulls:
-        print(pull.html_url)
+        list_of_open_pull_requests.append(pull.html_url)
+    return list_of_open_pull_requests
 
 
-def create_html(list_of_links):
+def create_html(list_of_links, filename):
     '''
-    creates and opens a webpage with a list of links 
+    creates and opens a webpage with a list of links
     '''
-    pass
+    with open(filename, 'w') as output_file:
+        header = """<html>
+        <head>Open pull requests</head>
+        <body>"""
+        footer = """</body>
+        </html>"""
+        output_file.write(header)
+
+        for link in list_of_links:
+            new_link = f"<p><a href=\"{link}\">{link}</a></p>"
+            output_file.write(new_link)
+
+        output_file.write(footer)
+        webbrowser.open('file://' + os.path.realpath(filename))
 
 def main():
     '''
@@ -65,10 +82,13 @@ def main():
     logged_user = log_into_github(access_token)
     logged_org = log_into_org(logged_user, organization)
     org_repos = get_all_repos(logged_org)
+    full_list = []
+    repo_counter = 1
     for repo in org_repos:
-        get_open_pull_requests(repo)
-
+        print(f"Working on repository #{repo_counter}")
+        full_list.extend(get_open_pull_requests(repo))
+        repo_counter += 1
+    create_html(full_list, 'pending_review.html')
 
 if __name__ == '__main__':
     main()
-    
