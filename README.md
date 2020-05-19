@@ -24,3 +24,9 @@ If you organization has many repositories you can use the value of *repo_filter*
 ## How to run
 
 With *config.json* in the same directory, run *repo_crawler.py*. At the end, it will launch a web browser to open *pending_review.html*. 
+
+## About the access token
+
+Make sure you give your access token enough permissions to access the organization you are planning to use. If you know the organization has open pull requests and you still get no results, that might be the issue. 
+
+This code was tested with an organization that had only private repositories, where the access token was given *admin:org, repo* access.
